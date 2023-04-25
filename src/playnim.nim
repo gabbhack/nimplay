@@ -1,9 +1,14 @@
+import std/os
+
 from nimscripter import
   loadScript,
   NimScriptFile
 
-proc runScript(script: cstring) {.exportc.} =
-  var scriptCode = newStringOfCap(script.len)
-  for char in script:
-    scriptCode.add char
-  discard loadScript NimScriptFile(scriptCode)
+
+createSymlink("/home/user/main", "/proc/self/exe")
+
+try:
+  discard loadScript(NimScriptFile(readLine(stdin)))
+except Exception as e:
+  echo e.msg
+  echo getStackTrace(e)
