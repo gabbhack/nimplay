@@ -32,3 +32,6 @@ bin/*
 outputGotten.txt
 tests/megatest.nim
 outputExpected.txt
+
+assets/frontend.js
+assets/wasm.*

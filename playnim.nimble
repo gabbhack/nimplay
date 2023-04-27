@@ -5,16 +5,14 @@ author        = "Gabben"
 description   = "A new awesome Nim playground"
 license       = "MIT"
 srcDir        = "src"
-bin           = @["playnim"]
 
 
 # Dependencies
 
-requires "nim >= 1.6.10"
+requires "nim >= 1.0.0"
 requires "nimscripter"
+requires "karax"
 
 task release, "Do the job":
-  exec "nim c -d:release -d:danger --mm:none -d:useMalloc -d:emscripten --os:linux --out=index.html src/playnim"
-
-task debug, "Do the job":
-  exec "nim c --mm:none --debugger:native -d:useMalloc -d:emscripten --os:linux --out=index.html src/playnim"
+  exec "nim js -d:release -d:danger -o:./public/assets/frontend.js src/frontend"
+  exec "nim c -d:release -d:danger --mm:none -d:useMalloc -d:emscripten --os:linux --out=./public/assets/wasm.js src/wasm"
