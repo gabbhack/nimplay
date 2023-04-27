@@ -16,3 +16,4 @@ requires "karax"
 task release, "Do the job":
   exec "nim js -d:release -d:danger -o:./public/assets/frontend.js src/frontend"
   exec "nim c -d:release -d:danger --mm:none -d:useMalloc -d:emscripten --os:linux --out=./public/assets/wasm.js src/wasm"
+  mvFile("public/assets/wasm.data", "public/wasm.data")
