@@ -35,3 +35,4 @@ outputExpected.txt
 
 public/assets/frontend.js
 public/assets/wasm.*
+public/*.wasm

@@ -1,6 +1,7 @@
 include karax / prelude
 import karax / [vstyles, kdom]
 import jsffi except `&`
+import jsconsole
 
 import macros, strutils
 
@@ -55,8 +56,10 @@ proc getValue(cm: CodeMirror): kstring {.importcpp: "#.getValue()".}
 proc setOption(cm: CodeMirror, key: kstring, value: js) {.importcpp: "#.setOption(@)".}
 proc replaceSelection(cm: CodeMirror, value: kstring) {.importcpp: "#.replaceSelection(@)".}
 proc refresh(cm: CodeMirror) {.importcpp: "#.refresh()".}
-proc ccall(self: Module, function: kstring, returnType: kstring, argumentTypes: seq[kstring], arguments: seq[JsObject]) {.importcpp: "#.ccall(@)".}
-proc print(self: Module, value: proc (text: kstring)) {.importcpp: "#.print = @".}
+proc ccall[T](self: Module, function: kstring, returnType: kstring, argumentTypes: seq[kstring], arguments: seq[JsObject]): T {.importcpp: "#.ccall(@)".}
+proc print(self: Module, value: proc (text: kstring)) {.importcpp: "#[\"print\"] = @".}
+proc replace(text: kstring, this: kstring, to: kstring): kstring {.importcpp: "#.replace(@)".}
+proc replace(text: kstring, this: kstring, to: kstring, to2: kstring): kstring {.importcpp: "#.replace(@)".}
 
 var
   module {.importc: "Module".}: Module
@@ -65,11 +68,20 @@ var
   runningCode = false
 
 module.print do (text: kstring):
-  outputText = text
+  console.log("Result: " & text)
+  var text = text & "\n"
+  text = text.replace("/&/g", "&amp;")
+  text = text.replace("/</g", "&lt;")
+  text = text.replace("/>/g", "&gt;")
+  text = text.replace("\n", "<br>", "g")
+
+  outputText &= text
 
 proc runCode() =
+  outputText = ""
   runningCode = true
-  module.ccall("runScript", "", @["String".kstring], @[myCodeMirror.getValue().toJs])
+  console.log("Run")
+  console.log(module.ccall[:int]("runScript", "number", @["string".kstring], @[myCodeMirror.getValue().toJs]))
   runningCode = false
 
 proc postRender(data: RouterData) =
