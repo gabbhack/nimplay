@@ -26,6 +26,8 @@ jobs:
         run: nimble install -d -y
 
       - name: Build
+        env:
+          NIM_VERSION: 1.6.12
         run: nimble release
 
       - name: Deploy
