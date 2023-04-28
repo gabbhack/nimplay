@@ -2789,7 +2789,7 @@ function createDom_486539785(data_486539786) {
     tmp_486539849.class = "headerbar";
     var tmp_486539819 = tmp_486539849;
     var tmp_486539820 = tree_687866640(45, []);
-    setAttr_687866499(tmp_486539820, "href", "https://play.nim-lang.org");
+    setAttr_687866499(tmp_486539820, "href", "https://nimplay.gabb.eu.org");
     var tmp_486539822 = tree_687866640(76, []);
     setAttr_687866499(tmp_486539822, "src", "/assets/logo.svg");
     add_687866577(tmp_486539820, tmp_486539822);
@@ -2798,7 +2798,7 @@ function createDom_486539785(data_486539786) {
     add_687866577(tmp_486539820, tmp_486539823);
     add_687866577(tmp_486539819, tmp_486539820);
     var tmp_486539824 = tree_687866640(45, []);
-    setAttr_687866499(tmp_486539824, "href", "https://github.com/PMunch/nim-playground-frontend");
+    setAttr_687866499(tmp_486539824, "href", "https://github.com/gabbhack/nimplay");
     var tmp_486539825 = tree_687866640(71, []);
     add_687866577(tmp_486539825, text_687866692(makeNimstrLit("Code on GitHub")));
     add_687866577(tmp_486539824, tmp_486539825);
