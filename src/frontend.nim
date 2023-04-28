@@ -49,7 +49,7 @@ createAliases("tdiv"):
 
 type
   CodeMirror = distinct Element
-  Worker {.importc.} = object
+  Worker {.importc.} = ref object
   Message[T] {.importc.} = object
     data: T
 
@@ -63,20 +63,29 @@ proc replace(text: kstring, this: kstring, to: kstring, to2: kstring): kstring {
 proc newWorker(url: kstring): Worker {.importcpp: "new Worker(@)".}
 proc onMessage[T](self: Worker, function: proc (msg: Message[T])) {.importcpp: "#.onmessage = @".}
 proc postMessage[T](self: Worker, message: T) {.importcpp: "#.postMessage(@)".}
+proc terminate(self: Worker) {.importcpp: "#.terminate()".}
+
+const knownVersions = [
+  "1.6.12".kstring,
+  "1.4.8",
+  "1.2.18",
+  "1.0.8"
+]
 
 var
   outputText = "".kstring
-  currentVersion = "1.6.12".kstring
   myCodeMirror: CodeMirror
   runningCode = false
-  worker = newWorker("assets/" & currentVersion & ".js")
 
-worker.onMessage do (msg: Message[kstring]):
+proc onReceiveMessage(message: Message[kstring]) =
   console.log("Receive message from worker".kstring)
-  console.log(msg.data)
-  outputText = msg.data
+  console.log(message.data)
+  outputText = message.data
   runningCode = false
   redraw(kxi)
+
+var worker = newWorker("assets/" & knownVersions[0] & ".js")
+worker.onMessage(onReceiveMessage)
 
 proc runCode() =
   outputText = ""
@@ -105,6 +114,12 @@ proc postRender(data: RouterData) =
         if (not runningCode): runCode()
     })
 
+proc changeNimVersion() =
+  runningCode = false
+  worker.terminate()
+  worker = newWorker("assets/" & kdom.getElementById("nimversion").value & ".js")
+  worker.onMessage(onReceiveMessage)
+
 proc changeFontSize() =
   let
     editor = kdom.getElementById("editor")
@@ -117,25 +132,31 @@ proc createDom(data: RouterData): VNode =
     headerbar:
       a(href = "https://nimplay.gabb.eu.org"):
         img(src = "/assets/logo.svg")
-        span: text "Playground"
+        span: text "Playground".kstring
       a(href = "https://github.com/gabbhack/nimplay"):
-        span: text "Code on GitHub"
+        span: text "Code on GitHub".kstring
     mainarea:
       baseColumn:
         bigEditor(id = "editor", class = "monospace"):
           optionsBar:
             span:
-              text "Font size: "
+              text "Font size: ".kstring
               input(`type` = "number", id = "fontsize", value = "13", `min` = "8", `max` = "50", step = "1", required = "required", onchange = changeFontSize)
+            span:
+              text " Nim version: ".kstring
+              select(id = "nimversion", onchange = changeNimVersion):
+                for version in knownVersions:
+                  option:
+                    text version
         bar:
           if not runningCode:
             mainButton(onclick = runCode):
               text "Run!"
               span(class = "buttonhint"):
-                text "(ctrl-enter)"
+                text "(ctrl-enter)".kstring
           else:
             mainButton(class = "is-loading"):
-              text "Run!"
+              text "Run!".kstring
         content2(id = "output"):
           pre(class = "monospace"):
             verbatim outputText

@@ -29,19 +29,61 @@ jobs:
             ${{ runner.os }}-nimble-
         if: runner.os != 'Windows'
 
-      - name: Set up Nim
+      - name: Set up Nim Stable
+        uses: jiro4989/setup-nim-action@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          nim-version: stable
+
+      - name: Install dependencies
+        run: nimble install -d -y
+
+      - name: Build frontend
+        run: nimble frontend
+
+      - name: Set up Nim 1.0.8
+        uses: jiro4989/setup-nim-action@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          nim-version: 1.0.8
+      
+      - name: Build 1.0.8
+        env:
+          NIM_VERSION: 1.0.8
+        run: nimble wasm
+
+      - name: Set up Nim 1.2.18
+        uses: jiro4989/setup-nim-action@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          nim-version: 1.2.18
+
+      - name: Build 1.2.18
+        env:
+          NIM_VERSION: 1.2.18
+        run: nimble wasm
+
+      - name: Set up Nim 1.4.8
+        uses: jiro4989/setup-nim-action@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          nim-version: 1.4.8
+
+      - name: Build 1.4.8
+        env:
+          NIM_VERSION: 1.4.8
+        run: nimble wasm
+
+      - name: Set up Nim 1.6.12
         uses: jiro4989/setup-nim-action@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           nim-version: 1.6.12
 
-      - name: Install dependencies
-        run: nimble install -d -y
-
-      - name: Build
+      - name: Build 1.6.12
         env:
           NIM_VERSION: 1.6.12
-        run: nimble release
+        run: nimble wasm
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
