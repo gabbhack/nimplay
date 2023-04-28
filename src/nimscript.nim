@@ -1,4 +1,5 @@
-import std/os
+from os import
+  createSymlink
 
 from nimscripter import
   loadScript,

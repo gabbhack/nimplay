@@ -49,40 +49,41 @@ createAliases("tdiv"):
 
 type
   CodeMirror = distinct Element
-  Module {.importc.} = object
+  Worker {.importc.} = object
+  Message[T] {.importc.} = object
+    data: T
 
 proc newCodeMirror(element: Element, config: js): CodeMirror {. importcpp: "CodeMirror(@)" .}
 proc getValue(cm: CodeMirror): kstring {.importcpp: "#.getValue()".}
 proc setOption(cm: CodeMirror, key: kstring, value: js) {.importcpp: "#.setOption(@)".}
 proc replaceSelection(cm: CodeMirror, value: kstring) {.importcpp: "#.replaceSelection(@)".}
 proc refresh(cm: CodeMirror) {.importcpp: "#.refresh()".}
-proc ccall[T](self: Module, function: kstring, returnType: kstring, argumentTypes: seq[kstring], arguments: seq[JsObject]): T {.importcpp: "#.ccall(@)".}
-proc print(self: Module, value: proc (text: kstring)) {.importcpp: "#[\"print\"] = @".}
 proc replace(text: kstring, this: kstring, to: kstring): kstring {.importcpp: "#.replace(@)".}
 proc replace(text: kstring, this: kstring, to: kstring, to2: kstring): kstring {.importcpp: "#.replace(@)".}
+proc newWorker(url: kstring): Worker {.importcpp: "new Worker(@)".}
+proc onMessage[T](self: Worker, function: proc (msg: Message[T])) {.importcpp: "#.onmessage = @".}
+proc postMessage[T](self: Worker, message: T) {.importcpp: "#.postMessage(@)".}
 
 var
-  module {.importc: "Module".}: Module
-  outputText= "".kstring
+  outputText = "".kstring
+  currentVersion = "1.6.12".kstring
   myCodeMirror: CodeMirror
   runningCode = false
+  worker = newWorker("assets/" & currentVersion & ".js")
 
-module.print do (text: kstring):
-  console.log("Result: " & text)
-  var text = text & "\n"
-  text = text.replace("/&/g", "&amp;")
-  text = text.replace("/</g", "&lt;")
-  text = text.replace("/>/g", "&gt;")
-  text = text.replace("\n", "<br>", "g")
-
-  outputText &= text
+worker.onMessage do (msg: Message[kstring]):
+  console.log("Receive message from worker".kstring)
+  console.log(msg.data)
+  outputText = msg.data
+  runningCode = false
+  redraw(kxi)
 
 proc runCode() =
   outputText = ""
   runningCode = true
-  console.log("Run")
-  console.log(module.ccall[:int]("runScript", "number", @["string".kstring], @[myCodeMirror.getValue().toJs]))
-  runningCode = false
+  console.log("Send message to worker".kstring)
+  worker.postMessage(myCodeMirror.getValue())
+  redraw(kxi)
 
 proc postRender(data: RouterData) =
   if myCodeMirror.Element == nil:
@@ -98,14 +99,10 @@ proc postRender(data: RouterData) =
         cm.replaceSelection("  ")
       ,
       "Ctrl-Enter".kstring: proc(cm: CodeMirror) =
-        if (not runningCode):
-          runCode()
-          redraw(kxi)
+        if (not runningCode): runCode()
       ,
       "Cmd-Enter".kstring: proc(cm: CodeMirror) =
-        if (not runningCode):
-          runCode()
-          redraw(kxi)
+        if (not runningCode): runCode()
     })
 
 proc changeFontSize() =
