@@ -15,6 +15,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: mymindstorm/setup-emsdk@v11
+        with:
+          version: 3.1.37
+          actions-cache-folder: 'emsdk-cache'
+
+      - name: Cache nimble
+        id: cache-nimble
+        uses: actions/cache@v3
+        with:
+          path: ~/.nimble
+          key: ${{ runner.os }}-nimble-${{ hashFiles('*.nimble') }}
+          restore-keys: |
+            ${{ runner.os }}-nimble-
+        if: runner.os != 'Windows'
 
       - name: Set up Nim
         uses: jiro4989/setup-nim-action@v1
