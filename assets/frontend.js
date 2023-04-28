@@ -2906,6 +2906,7 @@ function HEX3Aanonymous_486539744(cm_486539745) {
 function HEX3Aanonymous_486539762(cm_486539763) {
             if (!(runningCode_486539548[0])) {
             runCode_486539588();
+            redraw_654312401(kxi__);
             }
             
 
@@ -2915,6 +2916,7 @@ function HEX3Aanonymous_486539762(cm_486539763) {
 function HEX3Aanonymous_486539773(cm_486539774) {
             if (!(runningCode_486539548[0])) {
             runCode_486539588();
+            redraw_654312401(kxi__);
             }
             
 
