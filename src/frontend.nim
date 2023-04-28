@@ -114,10 +114,10 @@ proc changeFontSize() =
 proc createDom(data: RouterData): VNode =
   result = buildHtml(tdiv):
     headerbar:
-      a(href = "https://play.nim-lang.org"):
+      a(href = "https://nimplay.gabb.eu.org"):
         img(src = "/assets/logo.svg")
         span: text "Playground"
-      a(href = "https://github.com/PMunch/nim-playground-frontend"):
+      a(href = "https://github.com/gabbhack/nimplay"):
         span: text "Code on GitHub"
     mainarea:
       baseColumn:
