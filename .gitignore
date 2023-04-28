@@ -34,5 +34,6 @@ tests/megatest.nim
 outputExpected.txt
 
 public/assets/frontend.js
-public/assets/wasm.*
-public/*.wasm
+public/wasm.data
+public/assets/wasm.js
+public/assets/wasm.wasm

@@ -98,10 +98,14 @@ proc postRender(data: RouterData) =
         cm.replaceSelection("  ")
       ,
       "Ctrl-Enter".kstring: proc(cm: CodeMirror) =
-        if (not runningCode): runCode()
+        if (not runningCode):
+          runCode()
+          redraw(kxi)
       ,
       "Cmd-Enter".kstring: proc(cm: CodeMirror) =
-        if (not runningCode): runCode()
+        if (not runningCode):
+          runCode()
+          redraw(kxi)
     })
 
 proc changeFontSize() =
