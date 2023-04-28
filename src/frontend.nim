@@ -67,9 +67,6 @@ proc terminate(self: Worker) {.importcpp: "#.terminate()".}
 
 const knownVersions = [
   "1.6.12".kstring,
-  "1.4.8",
-  "1.2.18",
-  "1.0.8"
 ]
 
 var
