@@ -3,7 +3,6 @@ import karax / [vstyles, kdom]
 import jsffi except `&`
 import jsconsole
 import base64
-import strutils
 
 import macros, strutils
 
@@ -102,6 +101,16 @@ proc runCode() =
   worker.postMessage(myCodeMirror.getValue())
   redraw(kxi)
 
+proc shareCode() =
+  let
+    code = $myCodeMirror.getValue()
+    encoded = encode(code, safe=true).kstring
+  setHash("#b=" & encoded)
+  outputText = "https://" & siteDomain & "/#b=" & encoded
+
+proc loadCodeFromB64(based: string) =
+  myCodeMirror.setValue(decode(based).kstring)
+
 proc postRender(data: RouterData) =
   if myCodeMirror.Element == nil:
     myCodeMirror = newCodeMirror(kdom.getElementById("editor"), js{
@@ -138,16 +147,6 @@ proc changeFontSize() =
     fontSizeInput = kdom.getElementById("fontsize")
   editor.applyStyle(style(fontSize, fontSizeInput.value & "px".kstring))
   myCodeMirror.refresh()
-
-proc shareCode() =
-  let
-    code = $myCodeMirror.getValue()
-    encoded = encode(code, safe=true).kstring
-  setHash("#b=" & encoded)
-  outputText = "https://" & siteDomain & "/#b=" & encoded
-
-proc loadCodeFromB64(based: string) =
-  myCodeMirror.setValue(decode(based).kstring)
 
 proc createDom(data: RouterData): VNode =
   result = buildHtml(tdiv):
