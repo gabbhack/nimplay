@@ -122,6 +122,10 @@ proc postRender(data: RouterData) =
         if (not runningCode): runCode()
     })
 
+  if data.hashPart.startsWith("#b="):
+    let code = $data.hashPart
+    loadCodeFromB64(code[3..^1])
+
 proc changeNimVersion() =
   runningCode = false
   worker.terminate()
@@ -146,10 +150,6 @@ proc loadCodeFromB64(based: string) =
   myCodeMirror.setValue(decode(based).kstring)
 
 proc createDom(data: RouterData): VNode =
-  if data.hashPart.startsWith("#b="):
-    let code = $data.hashPart
-    loadCodeFromB64(code[3..^1])
-
   result = buildHtml(tdiv):
     headerbar:
       a(href = "https://" & siteDomain):
