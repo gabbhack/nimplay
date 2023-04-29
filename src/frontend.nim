@@ -2,6 +2,7 @@ include karax / prelude
 import karax / [vstyles, kdom]
 import jsffi except `&`
 import jsconsole
+import base64
 
 import macros, strutils
 
@@ -37,6 +38,7 @@ macro createAliases(tag: string, body: untyped): untyped =
 
 createAliases("button"):
   "main button"
+  "other button"
 
 createAliases("tdiv"):
   "headerbar"
@@ -54,12 +56,14 @@ type
     data: T
 
 proc newCodeMirror(element: Element, config: js): CodeMirror {. importcpp: "CodeMirror(@)" .}
+proc setValue(cm: CodeMirror, value: kstring) {.importcpp: "#.setValue(@)".}
 proc getValue(cm: CodeMirror): kstring {.importcpp: "#.getValue()".}
 proc setOption(cm: CodeMirror, key: kstring, value: js) {.importcpp: "#.setOption(@)".}
 proc replaceSelection(cm: CodeMirror, value: kstring) {.importcpp: "#.replaceSelection(@)".}
 proc refresh(cm: CodeMirror) {.importcpp: "#.refresh()".}
 proc replace(text: kstring, this: kstring, to: kstring): kstring {.importcpp: "#.replace(@)".}
 proc replace(text: kstring, this: kstring, to: kstring, to2: kstring): kstring {.importcpp: "#.replace(@)".}
+proc setHash(str: kstring) {.importcpp: "window.location.hash = #".}
 proc newWorker(url: kstring): Worker {.importcpp: "new Worker(@)".}
 proc onMessage[T](self: Worker, function: proc (msg: Message[T])) {.importcpp: "#.onmessage = @".}
 proc postMessage[T](self: Worker, message: T) {.importcpp: "#.postMessage(@)".}
@@ -124,7 +128,21 @@ proc changeFontSize() =
   editor.applyStyle(style(fontSize, fontSizeInput.value & "px".kstring))
   myCodeMirror.refresh()
 
+proc shareCode() =
+  let
+    code = $myCodeMirror.getValue()
+    encoded = encode(code, safe=true).kstring
+  setHash("#b=" & encoded)
+  outputText = "https://nimplay.gabb.eu.org/#b=" & encoded
+
+proc loadCodeFromB64(based: string) =
+  myCodeMirror.setValue(decode(based).kstring)
+
 proc createDom(data: RouterData): VNode =
+  if data.hashPart.startsWith("#b="):
+    let code = $data.hashPart
+    loadCodeFromB64(code[3..^1])
+
   result = buildHtml(tdiv):
     headerbar:
       a(href = "https://nimplay.gabb.eu.org"):
@@ -146,6 +164,9 @@ proc createDom(data: RouterData): VNode =
                   option:
                     text version
         bar:
+          otherButton(onclick = shareCode):
+            text "Share code"
+
           if not runningCode:
             mainButton(onclick = runCode):
               text "Run!"
