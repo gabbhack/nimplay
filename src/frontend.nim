@@ -3,6 +3,7 @@ import karax / [vstyles, kdom]
 import jsffi except `&`
 import jsconsole
 import base64
+import strutils
 
 import macros, strutils
 
@@ -69,9 +70,15 @@ proc onMessage[T](self: Worker, function: proc (msg: Message[T])) {.importcpp: "
 proc postMessage[T](self: Worker, message: T) {.importcpp: "#.postMessage(@)".}
 proc terminate(self: Worker) {.importcpp: "#.terminate()".}
 
-const knownVersions = [
-  "1.6.12".kstring,
-]
+const nimVersions {.strdefine.} = NimVersion
+
+const knownVersions = block:
+  var versions = newSeq[kstring]()
+  for v in nimVersions.split(","):
+    versions.add v
+  versions
+
+const siteDomain {.strdefine.} = "nimplay.gabb.eu.org"
 
 var
   outputText = "".kstring
@@ -133,7 +140,7 @@ proc shareCode() =
     code = $myCodeMirror.getValue()
     encoded = encode(code, safe=true).kstring
   setHash("#b=" & encoded)
-  outputText = "https://nimplay.gabb.eu.org/#b=" & encoded
+  outputText = "https://" & siteDomain & "/#b=" & encoded
 
 proc loadCodeFromB64(based: string) =
   myCodeMirror.setValue(decode(based).kstring)
@@ -145,7 +152,7 @@ proc createDom(data: RouterData): VNode =
 
   result = buildHtml(tdiv):
     headerbar:
-      a(href = "https://nimplay.gabb.eu.org"):
+      a(href = "https://" & siteDomain):
         img(src = "/assets/logo.svg")
         span: text "Playground".kstring
       a(href = "https://github.com/gabbhack/nimplay"):

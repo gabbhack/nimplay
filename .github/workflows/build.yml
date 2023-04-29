@@ -48,8 +48,6 @@ jobs:
           nim-version: 1.6.12
 
       - name: Build 1.6.12
-        env:
-          NIM_VERSION: 1.6.12
         run: nimble wasm
 
       - name: Deploy
