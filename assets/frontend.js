@@ -2872,7 +2872,7 @@ function shareCode_553648491() {
     var code_553648492 = cstrToNimstr(myCodeMirror_553648472[0].getValue());
     var encoded_553648497 = toJSStr(encode_1375731764(code_553648492, true));
     window.location.hash = ("#b=" + encoded_553648497);
-    outputText_553648471[0] = ("https://nimplay.gabb.eu.org/#b=" + encoded_553648497);
+    outputText_553648471[0] = ("https://nimplay.eu.org/#b=" + encoded_553648497);
 
   
 }
@@ -2913,7 +2913,7 @@ function createDom_553648738(data_553648739) {
     tmp_553648806.class = "headerbar";
     var tmp_553648772 = tmp_553648806;
     var tmp_553648773 = tree_754975582(45, []);
-    setAttr_754975433(tmp_553648773, "href", "https://nimplay.gabb.eu.org");
+    setAttr_754975433(tmp_553648773, "href", "https://nimplay.eu.org");
     var tmp_553648775 = tree_754975582(76, []);
     setAttr_754975433(tmp_553648775, "src", "/assets/logo.svg");
     add_754975518(tmp_553648773, tmp_553648775);
