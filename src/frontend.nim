@@ -77,7 +77,7 @@ const knownVersions = block:
     versions.add v
   versions
 
-const siteDomain {.strdefine.} = "nimplay.gabb.eu.org"
+const siteDomain {.strdefine.} = "nimplay.eu.org"
 
 var
   outputText = "".kstring
